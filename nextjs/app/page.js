@@ -1,22 +1,31 @@
 'use client';
 import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
   const [task, setTask] = useState('');
   const [tasks, setTasks] = useState([]);
 
+  useEffect(() => {
+    const savedTasks = localStorage.getItem('tasks');
+    if (savedTasks) {
+      setTasks(JSON.parse(savedTasks));
+    }
+  }, []);
+
   const handleAddClick = () => {
     if (task.trim() === '') return;
     const newTask = { id: uuidv4(), text: task, completed: false };
     setTasks([...tasks, newTask]);
+    localStorage.setItem('tasks', JSON.stringify([...tasks, newTask]));
     setTask('');
   }
 
   const deleteTask = (id) => {
     const updatedTasks = tasks.filter((task) => task.id !== id);
     setTasks(updatedTasks);
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
   }
   
   const handleCheked = (id) => {
@@ -27,6 +36,7 @@ export default function Home() {
       return task;
     });
     setTasks(updatedTasks);
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
   }
   
   return (
